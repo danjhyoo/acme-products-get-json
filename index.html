@@ -1,0 +1,108 @@
+<html>
+  <head>
+    <script
+      src="https://unpkg.com/react@16/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+    <style>
+      body {
+        box-sizing: border-box;
+      }
+      main {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+      }
+      .productCards {
+        border: solid 1px teal;
+        border-radius: 1rem;
+        flex-wrap: wrap;
+        background-color: teal;
+        padding: 1rem;
+        margin: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        color: white;
+        width: calc(100% / 3 - 5rem);
+      }
+      .productCards :first-child {
+        font-weight: bold;
+        font-size: larger;
+      }
+      .productCards div {
+        margin: 1rem;
+      }
+      .companyCard {
+        border: solid 1px teal;
+        border-radius: 1rem;
+        padding: 1rem;
+        margin: 1rem;
+        background-color: teal;
+        color: white;
+      }
+      .companyCard .header {
+        text-align: center;
+        font-weight: bold;
+        font-size: larger;
+        margin: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      class App extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            products: [],
+            companies: []
+          };
+        }
+        async componentDidMount() {
+          this.setState({
+            products: (await axios.get("api/products")).data,
+            companies: (await axios.get("api/companies")).data
+          });
+        }
+        render() {
+          const { products, companies } = this.state;
+          return (
+            <div>
+              <h1>Acme Express w/ JSON</h1>
+              <main>
+                {products.map(product => {
+                  return (
+                    <div className="productCards" key={product.id}>
+                      <div>{product.name.toUpperCase()}</div>
+                      <div>{product.description}</div>
+                      <div>${product.suggestedPrice}.00</div>
+                    </div>
+                  );
+                })}
+                <div className="companyCard">
+                  <div className="header">COMPANIES</div>
+                  <div>
+                    {companies.map(company => {
+                      return <div key={company.id}>{company.name}</div>;
+                    })}
+                  </div>
+                </div>
+              </main>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<App />, document.querySelector("#root"));
+    </script>
+  </body>
+</html>
